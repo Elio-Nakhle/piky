@@ -1,4 +1,4 @@
-# pdftools
+# Piky
 
 PDF processing tools powered by coverup-pdf and pikepdf.
 
@@ -7,6 +7,7 @@ PDF processing tools powered by coverup-pdf and pikepdf.
 - Python 3.14
 - [PDM](https://pdm-project.org/) (Python package manager)
 - Tk library for Python (required by coverup-pdf's GUI)
+- Poppler for preview
 
 ### Install package deps (macOS)
 
@@ -30,4 +31,10 @@ Start coverup on a directory of PDFs:
 
 ```bash
 pdm run invoke coverup --pdf-dir /path/to/pdfs
+```
+
+Do common operations on PDFs:
+
+```bash
+pdm run invoke piky
 ```
