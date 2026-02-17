@@ -1,11 +1,16 @@
 [project]
-name = "pdftools"
+name = "piky"
 version = "0.1.0"
 description = "Default template for PDM package"
 authors = [
     {name = "Elio Nakhle", email = "elio.nakhle@agile-robots.com"},
 ]
-dependencies = ["coverup-pdf>=0.4.1", "invoke>=2.2.1", "pikepdf>=10.3.0"]
+dependencies = [
+    "coverup-pdf>=0.4.1",
+    "invoke>=2.2.1",
+    "pikepdf>=10.3.0",
+    "pdf2image>=1.17.0",
+]
 requires-python = "==3.14.*"
 readme = "README.md"
 license = {text = "MIT"}

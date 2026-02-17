@@ -1,6 +1,6 @@
 # pdftools
 
-PDF processing tools powered by [coverup-pdf](https://pypi.org/project/coverup-pdf/).
+PDF processing tools powered by coverup-pdf and pikepdf.
 
 ## Prerequisites
 
@@ -8,16 +8,14 @@ PDF processing tools powered by [coverup-pdf](https://pypi.org/project/coverup-p
 - [PDM](https://pdm-project.org/) (Python package manager)
 - Tk library for Python (required by coverup-pdf's GUI)
 
-### Install Tk (macOS)
+### Install package deps (macOS)
 
 ```bash
 brew install python-tk@3.14
 ```
 
-### Install Tk (Ubuntu/Debian)
-
 ```bash
-sudo apt install python3-tk
+brew install poppler
 ```
 
 ## Setup

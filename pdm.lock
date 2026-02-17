@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:0e867cd47185018e150a5323ba1190fab2a51f3fef1799595de6f820f6fb6ba5"
+content_hash = "sha256:42d5c730d3eedb82d6b0dcdc3d002a8ad58817386bc9cea94127aabf2df90959"
 
 [[metadata.targets]]
 requires_python = "==3.14.*"
@@ -183,6 +183,19 @@ groups = ["default"]
 files = [
     {file = "packaging-26.0-py3-none-any.whl", hash = "sha256:b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529"},
     {file = "packaging-26.0.tar.gz", hash = "sha256:00243ae351a257117b6a241061796684b084ed1c516a08c48a3f7e147a9d80b4"},
+]
+
+[[package]]
+name = "pdf2image"
+version = "1.17.0"
+summary = "A wrapper around the pdftoppm and pdftocairo command line tools to convert PDF to a PIL Image list."
+groups = ["default"]
+dependencies = [
+    "pillow",
+]
+files = [
+    {file = "pdf2image-1.17.0-py3-none-any.whl", hash = "sha256:ecdd58d7afb810dffe21ef2b1bbc057ef434dabbac6c33778a38a3f7744a27e2"},
+    {file = "pdf2image-1.17.0.tar.gz", hash = "sha256:eaa959bc116b420dd7ec415fcae49b98100dda3dd18cd2fdfa86d09f112f6d57"},
 ]
 
 [[package]]
