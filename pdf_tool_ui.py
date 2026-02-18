@@ -24,6 +24,7 @@ class PDFToolUI:
         tk.Button(
             root, text="Add JPEGs as Pages", command=self.add_jpegs_as_pages
         ).pack(fill="x")
+        tk.Button(root, text="PDF to Text", command=self.pdf_to_text).pack(fill="x")
         tk.Label(root, text="Output file name:").pack(fill="x")
         tk.Entry(root, textvariable=self.output_file).pack(fill="x")
         self.pdf_listbox = tk.Listbox(root, selectmode=tk.SINGLE)
@@ -35,6 +36,30 @@ class PDFToolUI:
         tk.Button(root, text="Preview Selected PDF", command=self.preview_pdf).pack(
             fill="x"
         )
+
+    def pdf_to_text(self):
+        import pdftotext
+
+        pdf_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
+        if not pdf_path:
+            return
+        try:
+            with open(pdf_path, "rb") as f:
+                pdf = pdftotext.PDF(f)
+            # Ask for output file name
+            default_txt = os.path.splitext(pdf_path)[0] + ".txt"
+            txt_path = filedialog.asksaveasfilename(
+                defaultextension=".txt",
+                initialfile=os.path.basename(default_txt),
+                filetypes=[("Text files", "*.txt")],
+            )
+            if not txt_path:
+                return
+            with open(txt_path, "w", encoding="utf-8") as f:
+                f.write("\n\n".join(pdf))
+            messagebox.showinfo("Success", f"Extracted text saved to {txt_path}")
+        except Exception as e:
+            messagebox.showerror("PDF to Text Error", str(e))
 
     def add_pdfs(self):
         files = filedialog.askopenfilenames(filetypes=[("PDF files", "*.pdf")])
