@@ -1,3 +1,4 @@
+import tempfile
 import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog
 import pikepdf
@@ -25,6 +26,14 @@ class PDFToolUI:
             root, text="Add JPEGs as Pages", command=self.add_jpegs_as_pages
         ).pack(fill="x")
         tk.Button(root, text="PDF to Text", command=self.pdf_to_text).pack(fill="x")
+        tk.Button(
+            root,
+            text="Strip Interactive Elements",
+            command=self.strip_interactive,
+        ).pack(fill="x")
+        tk.Button(
+            root, text="Flatten to Images", command=self.flatten_to_images
+        ).pack(fill="x")
         tk.Label(root, text="Output file name:").pack(fill="x")
         tk.Entry(root, textvariable=self.output_file).pack(fill="x")
         self.pdf_listbox = tk.Listbox(root, selectmode=tk.SINGLE)
@@ -115,12 +124,16 @@ class PDFToolUI:
         page_nums = simpledialog.askstring(
             "Pages", "Page numbers/ranges to rotate (e.g. 1-3,5,7):"
         )
+        if page_nums is None:
+            return
         angle = simpledialog.askinteger("Angle", "Rotation angle (90, 180, 270):")
+        if angle is None:
+            return
         output = self.output_file.get() or "rotated.pdf"
         pdf_in = pikepdf.Pdf.open(pdf)
         pages_to_rotate = self._parse_page_ranges(page_nums)
         for num in pages_to_rotate:
-            pdf_in.pages[num - 1].rotate(angle)
+            pdf_in.pages[num - 1].rotate(angle, relative=True)
         pdf_in.save(output)
         messagebox.showinfo("Done", f"Saved rotated PDF to {output}")
 
@@ -140,6 +153,69 @@ class PDFToolUI:
             del pdf_in.pages[num]
         pdf_in.save(output)
         messagebox.showinfo("Done", f"Saved PDF with pages removed to {output}")
+
+    def _strip_interactive_elements(self, pdf):
+        """Remove annotations, forms, actions, bookmarks, and other interactivity."""
+        root = pdf.Root
+        for key in (
+            "/AcroForm",
+            "/AA",
+            "/OpenAction",
+            "/Outlines",
+            "/Names",
+            "/Threads",
+            "/Collection",
+        ):
+            if key in root:
+                del root[key]
+
+        for page in pdf.pages:
+            for key in ("/Annots", "/AA", "/Tabs"):
+                if key in page:
+                    del page[key]
+
+    def strip_interactive(self):
+        pdf_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
+        if not pdf_path:
+            return
+        output = self.output_file.get() or "stripped.pdf"
+        try:
+            pdf = pikepdf.Pdf.open(pdf_path)
+            self._strip_interactive_elements(pdf)
+            pdf.save(output)
+            messagebox.showinfo(
+                "Done",
+                f"Saved PDF with interactive elements removed to {output}",
+            )
+        except Exception as e:
+            messagebox.showerror("Strip Interactive Error", str(e))
+
+    def flatten_to_images(self):
+        pdf_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
+        if not pdf_path:
+            return
+        dpi = simpledialog.askinteger(
+            "DPI", "Rasterization DPI (higher = sharper, larger file):", initialvalue=200
+        )
+        if dpi is None:
+            return
+        output = self.output_file.get() or "flattened.pdf"
+        try:
+            images = convert_from_path(pdf_path, dpi=dpi)
+            pdf_out = pikepdf.Pdf.new()
+            with tempfile.TemporaryDirectory() as tmpdir:
+                for i, img in enumerate(images):
+                    if img.mode != "RGB":
+                        img = img.convert("RGB")
+                    page_pdf = os.path.join(tmpdir, f"page_{i}.pdf")
+                    img.save(page_pdf, "PDF")
+                    pdf_out.pages.extend(pikepdf.Pdf.open(page_pdf).pages)
+            pdf_out.save(output)
+            messagebox.showinfo(
+                "Done", f"Saved flattened PDF ({len(images)} pages) to {output}"
+            )
+        except Exception as e:
+            messagebox.showerror("Flatten to Images Error", str(e))
 
     def _parse_page_ranges(self, page_str):
         """Parse a string like '1-3,5,7-9' into a list of ints."""
