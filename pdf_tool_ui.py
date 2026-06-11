@@ -34,6 +34,7 @@ class PDFToolUI:
         tk.Button(
             root, text="Flatten to Images", command=self.flatten_to_images
         ).pack(fill="x")
+        tk.Button(root, text="Fill & Sign", command=self.fill_and_sign).pack(fill="x")
         tk.Label(root, text="Output file name:").pack(fill="x")
         tk.Entry(root, textvariable=self.output_file).pack(fill="x")
         self.pdf_listbox = tk.Listbox(root, selectmode=tk.SINGLE)
@@ -251,6 +252,14 @@ class PDFToolUI:
             os.remove(img_pdf_path)
         pdf_in.save(output)
         messagebox.showinfo("Done", f"Saved PDF with JPEGs added to {output}")
+
+    def fill_and_sign(self):
+        pdf_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
+        if not pdf_path:
+            return
+        from form_filler import open_form_filler
+
+        open_form_filler(self.root, pdf_path=pdf_path)
 
     def preview_pdf(self):
         sel = self.pdf_listbox.curselection()
